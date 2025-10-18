@@ -1,12 +1,7 @@
 ## EX. NO:2 IMPLEMENTATION OF PLAYFAIR CIPHER
 
- 
-
 ## AIM:
  
-
- 
-
 To write a C program to implement the Playfair Substitution technique.
 
 ## DESCRIPTION:
@@ -32,12 +27,88 @@ STEP-4: Group the plain text in pairs and match the corresponding corner letters
 STEP-5: Display the obtained cipher text.
 
 
+## Program:
+
+NAME:Tejasree.K
+
+REG NO:212224240168
+```
+def generate_key_matrix(key):
+    key = key.upper().replace("J", "I")
+    matrix = ""
+    for c in key:
+        if c.isalpha() and c not in matrix:
+            matrix += c
+    for c in "ABCDEFGHIKLMNOPQRSTUVWXYZ":  # J merged with I
+        if c not in matrix:
+            matrix += c
+    return [list(matrix[i:i+5]) for i in range(0, 25, 5)]
+
+def find_position(matrix, char):
+    for i in range(5):
+        for j in range(5):
+            if matrix[i][j] == char:
+                return i, j
+    return None
+
+def prepare_text(text):
+    text = text.upper().replace("J", "I")
+    text = "".join([c for c in text if c.isalpha()])
+    result = ""
+    i = 0
+    while i < len(text):
+        a = text[i]
+        b = text[i+1] if i+1 < len(text) else "X"
+        if a == b:
+            result += a + "X"
+            i += 1
+        else:
+            result += a + b
+            i += 2
+    if len(result) % 2 != 0:
+        result += "X"
+    return result
+
+def encrypt(text, key):
+    matrix = generate_key_matrix(key)
+    text = prepare_text(text)
+    cipher = ""
+    for i in range(0, len(text), 2):
+        a, b = text[i], text[i+1]
+        r1, c1 = find_position(matrix, a)
+        r2, c2 = find_position(matrix, b)
+        if r1 == r2:
+            cipher += matrix[r1][(c1+1)%5] + matrix[r2][(c2+1)%5]
+        elif c1 == c2:
+            cipher += matrix[(r1+1)%5][c1] + matrix[(r2+1)%5][c2]
+        else:
+            cipher += matrix[r1][c2] + matrix[r2][c1]
+    return cipher
+
+def decrypt(text, key):
+    matrix = generate_key_matrix(key)
+    plain = ""
+    for i in range(0, len(text), 2):
+        a, b = text[i], text[i+1]
+        r1, c1 = find_position(matrix, a)
+        r2, c2 = find_position(matrix, b)
+        if r1 == r2:
+            plain += matrix[r1][(c1-1)%5] + matrix[r2][(c2-1)%5]
+        elif c1 == c2:
+            plain += matrix[(r1-1)%5][c1] + matrix[(r2-1)%5][c2]
+        else:
+            plain += matrix[r1][c2] + matrix[r2][c1]
+    return plain
+
+# Example
+key = "PLAYFAIREXAMPLE"
+plaintext = "HIDETHEGOLDINTHETREESTUMP"
+cipher = encrypt(plaintext, key)
+print("Ciphertext:", cipher)
+print("Decrypted :", decrypt(cipher, key))
+```
 
 
-Program:
+## Output:
 
-
-
-
-
-Output:
+<img width="739" height="114" alt="image" src="https://github.com/user-attachments/assets/cb329a4a-7f19-4b5c-8e86-030fde26edf7" />
